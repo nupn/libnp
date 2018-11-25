@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include "KoreanIME.h"
-namespace NPL
+namespace NPCL
 {
 void CKoreanIME::InputCharacter(unsigned int input)
 {
@@ -1254,13 +1254,11 @@ void CKoreanIME::__OnSpace()
 		++m_nCursorIdx;
 		nCursorState = kCusorInsert;
 	}
-	else
-	{
-		__MemMoveBack(m_nCursorIdx);
-		inputChar[m_nCursorIdx] = 32;
-		++m_nCursorIdx;
-		++nCharlen;
-	}
+
+	__MemMoveBack(m_nCursorIdx);
+	inputChar[m_nCursorIdx] = 32;
+	++m_nCursorIdx;
+	++nCharlen;
 }
 
 std::string CKoreanIME::GetString() const
@@ -1328,6 +1326,15 @@ int CKoreanIME::__CalcCharSize() const
 	}
 
 	return nCharSize;
+}
+
+void CKoreanIME::Clear()
+{
+	m_nCursorIdx = 0;
+	nCharlen = 0;
+	nCursorState = kCusorInsert;
+
+	ZeroMemory(inputChar, sizeof(TCHAR) * 512);
 }
 
 }

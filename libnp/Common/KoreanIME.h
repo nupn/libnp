@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-namespace NPL
+namespace NPCL
 {
 	class CKoreanIME
 	{
@@ -27,6 +27,7 @@ namespace NPL
 
 		void OnSpace();
 		void OnDelete();
+		void Clear();
 
 	private:
 		bool __IsShift() const;

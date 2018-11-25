@@ -18,7 +18,7 @@ namespace NPL
 				if (instance == nullptr)
 				{
 					instance = new T();
-					m_instance.store(instance, memory_order_release)
+					m_instance.store(instance, memory_order_release);
 				}
 
 				m_mutex.unlock();

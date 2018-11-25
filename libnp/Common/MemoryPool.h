@@ -2,7 +2,6 @@
 #include <vector>
 #include <mutex>
 #include <atomic>
-#include <Windows.h>
 #include "Windows.h"
 #include <stdio.h>
 

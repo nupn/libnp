@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-namespace NPCL
+namespace NPL
 {
 	class CKoreanIME
 	{

@@ -1,6 +1,6 @@
 #include <Windows.h>
 #include "KoreanIME.h"
-namespace NPCL
+namespace NPL
 {
 void CKoreanIME::InputCharacter(unsigned int input)
 {

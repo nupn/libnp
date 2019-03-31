@@ -8,7 +8,7 @@ namespace NPL
 	template <typename T> class Singletone
 	{
 	public:
-		static T* Singletone::GetInstnace()
+		static T* Singletone::GetInstance()
 		{
 			T* instance = m_instance.load(memory_order_acquire);
 			if (instance == nullptr)

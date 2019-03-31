@@ -130,12 +130,14 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="EventDispatcher.cpp" />
     <ClCompile Include="KoreanIME.cpp" />
     <ClCompile Include="LoadTest.cpp" />
     <ClCompile Include="MemoryPool.cpp" />
     <ClCompile Include="Singletone.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="EventDispatcher.h" />
     <ClInclude Include="KoreanIME.h" />
     <ClInclude Include="LoadTest.h" />
     <ClInclude Include="MemoryPool.h" />

@@ -1,3 +1,4 @@
+#if defined(_WIN32)
 #pragma once
 #include <string>
 namespace NPL
@@ -95,3 +96,4 @@ namespace NPL
 	};
 
 }
+#endif

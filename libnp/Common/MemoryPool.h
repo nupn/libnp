@@ -2,53 +2,26 @@
 #include <vector>
 #include <mutex>
 #include <atomic>
-#include "Windows.h"
 #include <stdio.h>
 
 using namespace std;
 
-
-#define MEMPOOL_STATIC(cls, cnt) \
-mutex              CMemoryPool<cls, cnt>::m_mutex; \
-atomic<CMemoryPool<cls, cnt>*> CMemoryPool<cls, cnt>::m_instance = 0; \
-
-
-#define MEMPOOL_OPERATOR(cls, cnt) \
-void* operator new(size_t size) \
-{\
-	CMemoryPool<cls, cnt>* pInstnace = CMemoryPool<cls, cnt>::GetInstance();\
-	if (pInstnace != nullptr)\
-	{\
-		return pInstnace->Allowcate(1);\
-	}\
-\
-	return nullptr;\
-}\
-\
-void operator delete(void* pDelete)\
-{\
-	CMemoryPool<cls, cnt>* pInstnace = CMemoryPool<cls, cnt>::GetInstance();\
-	if (pInstnace != nullptr)\
-	{\
-		return pInstnace->Deallocate(pDelete, 1);\
-	}\
-}\
-
-
+#if defined(_WIN32)
 namespace NPL
 {
+#endif
 	template <typename T>
 	class CMemBlock
 	{
 	public:
-		CMemBlock::CMemBlock(int nBlockCnt, size_t nBlockSize)
+		CMemBlock(int nBlockCnt, size_t nBlockSize)
 			: m_nBlockTotal(nBlockCnt)
 			, m_nSize(nBlockSize)
 		{
 
 		}
 
-		//CMemBlock::CMemBlock(const CMemBlock<T>& base) <- not this
+		//CMemBlock(const CMemBlock<T>& base) <- not this
 		/*
 		CMemBlock(const CMemBlock<T>& base)
 		{
@@ -69,11 +42,11 @@ namespace NPL
 			m_vecBlockUsed.swap(base.m_vecBlockUsed);
 		}
 
-		CMemBlock::~CMemBlock()
+		~CMemBlock()
 		{
 		}
 
-		void CMemBlock::Clear()
+		void Clear()
 		{
 			if (n_pHeapHandle != nullptr)
 			{
@@ -83,12 +56,12 @@ namespace NPL
 			}
 		}
 
-		int CMemBlock::GetSize() const
+		int GetSize() const
 		{
 			return m_nBlockUsed;
 		}
 		
-		bool CMemBlock::IsFull()
+		bool IsFull()
 		{
 			if (m_nBlockUsed >= m_nBlockTotal)
 			{
@@ -98,7 +71,7 @@ namespace NPL
 			return false;
 		}
 
-		bool CMemBlock::IsMyMemory(T* pDelete)
+		bool IsMyMemory(T* pDelete)
 		{
 			T* pBlock = reinterpret_cast<T*>(n_pHeapHandle);
 			if (pDelete >= pBlock && pDelete < pBlock + (m_nBlockTotal))
@@ -109,7 +82,7 @@ namespace NPL
 			return false;
 		}
 
-		void* CMemBlock::Allowcate(int count)
+		void* Allowcate(int count)
 		{
 			if (n_pHeapHandle == nullptr)
 			{
@@ -137,7 +110,7 @@ namespace NPL
 			return NULL;
 		}
 
-		bool CMemBlock::Deallocate(T* pDelete, int count)
+		bool Deallocate(T* pDelete, int count)
 		{
 			if (IsMyMemory(pDelete))
 			{
@@ -158,7 +131,7 @@ namespace NPL
 		}
 
 		size_t	m_nSize;
-		HANDLE n_pHeapHandle = nullptr;
+		void* n_pHeapHandle = nullptr;
 		int m_nBlockTotal = 0;
 		int m_nBlockUsed = 0;
 		std::vector<bool> m_vecBlockUsed;
@@ -170,12 +143,12 @@ namespace NPL
 	public:
 		static atomic<CMemoryPool<T, Cnt>*> m_instance;
 		static mutex      m_mutex;
-		static CMemoryPool<T, Cnt>* CMemoryPool::GetInstance()
+		static CMemoryPool<T, Cnt>* GetInstance()
 		{
 			CMemoryPool<T, Cnt>* pPointer = m_instance.load();
 			if (pPointer == nullptr)
 			{
-				std::lock_guard<std::mutex> lock(m_mutex);
+				std::lock_guard<std::mutex> lock(CMemoryPool<T, Cnt>::m_mutex);
 				pPointer = m_instance.load();
 				if (pPointer == nullptr)
 				{
@@ -189,7 +162,7 @@ namespace NPL
 
 
 
-		CMemoryPool::CMemoryPool(size_t nSize, int nBlockCnt)
+		CMemoryPool(size_t nSize, int nBlockCnt)
 			: m_nBlockTotal(nBlockCnt),
 			m_nSize(nSize)
 		{
@@ -202,14 +175,14 @@ namespace NPL
 			m_memBlocks.swap(base.m_memBlocks);
 		}
 
-		CMemoryPool::~CMemoryPool()
+		~CMemoryPool()
 		{
 			Clear();
 		};
 
-		void* CMemoryPool::Allowcate(int nCount)
+		void* Allowcate(int nCount)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			std::lock_guard<std::mutex> lock(CMemoryPool<T, Cnt>::m_mutex);
 			
 			for (int i = 0; i < (int)m_memBlocks.size(); ++i)
 			{
@@ -226,9 +199,9 @@ namespace NPL
 			return p;
 		};
 
-		void CMemoryPool::Deallocate(void* pDelete, int nCount)
+		void Deallocate(void* pDelete, int nCount)
 		{
-			std::lock_guard<std::mutex> lock(m_mutex);
+			std::lock_guard<std::mutex> lock(CMemoryPool<T, Cnt>::m_mutex);
 
 			T* pDeletePointer = reinterpret_cast<T*>(pDelete);
 			for (int i = 0; i < (int)m_memBlocks.size(); ++i)
@@ -240,7 +213,7 @@ namespace NPL
 			}
 		};
 
-		void CMemoryPool::Clear()
+		void Clear()
 		{
 			for (auto&& item : m_memBlocks)
 			{
@@ -250,7 +223,7 @@ namespace NPL
 			m_memBlocks.clear();
 		};
 
-		int CMemoryPool::Size() const
+		int Size() const
 		{
 			int nSize = 0;
 			for (int i = 0; i < (int)m_memBlocks.size(); ++i)
@@ -261,7 +234,7 @@ namespace NPL
 			return nSize;
 		}
 
-		int CMemoryPool::BlockSize() const
+		int BlockSize() const
 		{
 			return m_memBlocks.size();
 		}
@@ -271,4 +244,36 @@ namespace NPL
 		size_t m_nSize  =0 ;
 		int m_nBlockTotal = 0;
 	};
+#if defined(_WIN32)
 }
+#endif
+
+#define MEMPOOL_STATIC(cls, cnt) \
+template<> \
+mutex              CMemoryPool<cls, cnt>::m_mutex{}; \
+template<> \
+atomic<CMemoryPool<cls, cnt>*> CMemoryPool<cls, cnt>::m_instance(0); \
+
+
+#define MEMPOOL_OPERATOR(cls, cnt) \
+void* operator new(size_t size) \
+{\
+	CMemoryPool<cls, cnt>* pInstnace = CMemoryPool<cls, cnt>::GetInstance();\
+	if (pInstnace != nullptr)\
+	{\
+		return pInstnace->Allowcate(1);\
+	}\
+\
+	return nullptr;\
+}\
+\
+void operator delete(void* pDelete)\
+{\
+	CMemoryPool<cls, cnt>* pInstnace = CMemoryPool<cls, cnt>::GetInstance();\
+	if (pInstnace != nullptr)\
+	{\
+		return pInstnace->Deallocate(pDelete, 1);\
+	}\
+}\
+
+

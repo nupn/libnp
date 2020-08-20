@@ -1,3 +1,4 @@
+#if defined(_WIN32)
 #include <Windows.h>
 #include "KoreanIME.h"
 namespace NPL
@@ -1338,4 +1339,4 @@ void CKoreanIME::Clear()
 }
 
 }
-
+#endif

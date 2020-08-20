@@ -3,12 +3,14 @@
 #include <atomic>
 
 using namespace std;
+#if defined(_WIN32)
 namespace NPL
 {
+#endif
 	template <typename T> class Singletone
 	{
 	public:
-		static T* Singletone::GetInstance()
+		static T* GetInstance()
 		{
 			T* instance = m_instance.load(memory_order_acquire);
 			if (instance == nullptr)
@@ -35,4 +37,6 @@ namespace NPL
 
 	template <typename T>
 	atomic<T*>		   Singletone<T>::m_instance = nullptr;
+#if defined(_WIN32)
 }
+#endif

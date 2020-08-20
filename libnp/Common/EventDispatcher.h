@@ -1,7 +1,12 @@
 #pragma once
 #include <functional>
 #include <unordered_map>
+#include <list>
 
+
+template <int _Nx>
+struct _Ph{
+};
 
 template <typename _Key, typename _Ret>
 class EventDispatcher
@@ -135,20 +140,20 @@ private:
 	template <typename T, typename... Args2, std::size_t... Idx>
 	decltype(auto) _makeplaceholder(_Ret(T::*func)(Args2...), T *target, std::index_sequence<Idx...>)
 	{
-		return std::bind(func, target, std::_Ph<Idx + 1>{}...);
+		return std::bind(func, target, _Ph<Idx + 1>{}...);
 	}
 
 
 	template <typename... Args3, std::size_t... Idx>
 	decltype(auto) _makeplaceholder(_Ret(*func)(Args3...), std::index_sequence<Idx...>)
 	{
-		return std::bind(func, std::_Ph<Idx + 1>{}...);
+		return std::bind(func, _Ph<Idx + 1>{}...);
 	}
 
 	template <typename _T3, std::size_t... Idx>
 	decltype(auto) _makeplaceholder(_T3&& func, std::index_sequence<Idx...>)
 	{
-		return std::bind(std::ref(func), std::_Ph<Idx + 1>{}...);
+		return std::bind(std::ref(func), _Ph<Idx + 1>{}...);
 	}
 
 	std::unordered_map<_Key, std::list<Handler>> m_mapHandles;

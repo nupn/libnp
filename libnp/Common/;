@@ -1,0 +1,47 @@
+#include "Match.h"
+
+
+class CustomMatchUser;
+using CustomMatchUserPtr = std::shared_ptr<CustomMatchUserPtr>;
+
+class CustomMatchUser: public MatchUser
+{
+	public:
+		virtual bool Equal(const MatchUserWeakPtr user)
+		{
+			auto user = user.lock();
+			if (!user) {
+				return false;
+			}
+
+			auto matchUser = std::dynamic_pointer_cast<CustomeMatchUser>(user);
+
+
+			return true;
+		}
+
+		virtual bool Greater(const MatchUserWeakPtr user)
+		{
+		}
+		
+		int Rating() {
+			return _matchValue;
+		}
+
+		void SetRation(int rating) {
+			_matchValue = raring;	
+		}
+
+	private:
+		int _matchValue;
+}
+
+
+int main() {
+
+	User uesr;
+	Match match;
+
+
+	return 0;
+}

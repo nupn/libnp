@@ -6,11 +6,11 @@ TARGET	= libnp.a
 .SUFFIXES: .cpp
 
 .cpp.o:
-	$(CC) -std=c++14 -c $< -o $@
+	$(CC) -std=c++17 -c $< -o $@
 
-all : $(TARGET)
+all: $(TARGET)
 
-$(TARGET) : $(OBJS)
+$(TARGET): $(OBJS)
 	ar ru $(TARGET) $^
 	ranlib $@
 

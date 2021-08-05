@@ -1,31 +1,38 @@
 #include <list>
 #include <memory>
 
-class MatchUser;
+class MatchSeed;
 
-using MatchUserPtr = std::shared_ptr<MatchUser>;
-using MatchUserWeakPtr = std::weak_ptr<MatchUser>;
-using MatchGroup =  std::list<MatchUserWeakPtr>;
-using MatchGroupList = std::list<MatchGroup>;
+using MatchSeedPtr = std::shared_ptr<MatchSeed>;
+using MatchSeedWeakPtr = std::weak_ptr<MatchSeed>;
+using MatchGame = std::list<MatchSeedWeakPtr>;
+using MatchGameList = std::list<MatchGame>;
 
-class MatchUser
+class MatchSeed
 {
 	public:
-		virtual bool Equal(const MatchUserWeakPtr user) = 0;
-		virtual bool Greater(const MatchUserWeakPtr user) = 0;
+		virtual bool Equal(const MatchSeedWeakPtr seed) = 0;
+		virtual bool Greater(const MatchSeedWeakPtr seed) = 0;
+		//virtual int PlayerNumber();
 };
 
 class Match
 {
 	public:
-		bool Add(MatchUserPtr user);
-		void Remove(MatchUserPtr user);
-		MatchGroupList MakeGroup();
+		bool AddSeed(MatchSeedPtr seed);
+		void RemoveSeed(MatchSeedPtr seed);
+		MatchSeedPtr FindSeed(const MatchSeedPtr seed);
+		MatchGameList MakeGame();
+		int SetGamePlayerNumber(int size);
 	private:
-		//void sort();
-		//void makeGroup();
+		void VarSort();
+		void AscSort();
+		void DescSort();
+		//void makeGame();
 	private:
-		std::list<MatchUserWeakPtr> _users;
+		int _gamePlayerNumber;
+		std::list<MatchSeedWeakPtr> _seeds;
+		bool _needAscSort;
 			
 
 };
